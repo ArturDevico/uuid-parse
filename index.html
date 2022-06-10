@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>uuid parse</title>
+  </head>
+  <body>
+    <input id="uuid" />
+    <pre id="result"></pre>
+    <script>
+      (function () {
+        const byteToHex = [];
+        const hexToByte = {};
+        const uuidInput = document.querySelector("#uuid");
+        const resultBox = document.querySelector("#result");
+
+        for (var i = 0; i < 256; i++) {
+          byteToHex[i] = (i + 0x100).toString(16).substr(1);
+          hexToByte[byteToHex[i]] = i;
+        }
+
+        uuidInput.addEventListener("change", () => {
+          resultBox.textContent = JSON.stringify(
+            {
+              type: "Buffer",
+              data: parse(uuidInput.value),
+            },
+            null,
+            2
+          );
+        });
+
+        function parse(s) {
+          const buf = [];
+          let i = 0;
+
+          s.toLowerCase().replace(/[0-9a-f]{2}/g, function (oct) {
+            if (i < 16) {
+              buf[i++] = hexToByte[oct];
+            }
+          });
+
+          while (i < 16) {
+            buf[i++] = 0;
+          }
+
+          return buf;
+        }
+      })();
+    </script>
+  </body>
+</html>
